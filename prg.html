@@ -1,0 +1,696 @@
+
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Datové soubory – tahák</title>
+
+<style>
+:root {
+    --bg: #0b1020;
+    --card: #151e33;
+    --card2: #1c2942;
+    --text: #f1f5f9;
+    --muted: #a7b4c8;
+    --blue: #60a5fa;
+    --green: #4ade80;
+    --orange: #fbbf24;
+    --red: #fb7185;
+    --border: #2d3b55;
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: Arial, sans-serif;
+    line-height: 1.6;
+}
+header {
+    padding: 35px 20px;
+    background: linear-gradient(135deg, #172554, #164e63);
+    text-align: center;
+}
+header h1 { font-size: 29px; margin: 0 0 8px; }
+header p { color: #cbd5e1; margin: 0; }
+nav {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: #111a2c;
+    padding: 10px;
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    border-bottom: 1px solid var(--border);
+}
+nav a {
+    color: var(--text);
+    background: var(--card2);
+    padding: 8px 12px;
+    border-radius: 20px;
+    white-space: nowrap;
+    text-decoration: none;
+    font-size: 13px;
+}
+main {
+    max-width: 850px;
+    margin: auto;
+    padding: 16px;
+}
+section { margin: 30px 0; scroll-margin-top: 70px; }
+h2 {
+    font-size: 23px;
+    border-bottom: 2px solid var(--blue);
+    padding-bottom: 8px;
+}
+h3 { color: var(--blue); margin-bottom: 7px; }
+p { margin: 8px 0; }
+.card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 16px;
+    margin: 12px 0;
+}
+.tip { border-left: 4px solid var(--green); }
+.warning { border-left: 4px solid var(--orange); }
+.danger { border-left: 4px solid var(--red); }
+.tag {
+    display: inline-block;
+    background: #23395d;
+    color: #bfdbfe;
+    padding: 3px 9px;
+    border-radius: 20px;
+    font-size: 12px;
+    margin: 3px;
+}
+pre {
+    background: #080d18;
+    border: 1px solid var(--border);
+    padding: 13px;
+    border-radius: 10px;
+    overflow-x: auto;
+    color: #d1fae5;
+    font-size: 13px;
+    line-height: 1.55;
+}
+code { font-family: Consolas, monospace; }
+table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+}
+td, th {
+    padding: 9px;
+    border-bottom: 1px solid var(--border);
+    text-align: left;
+}
+th { color: var(--blue); }
+details {
+    background: var(--card2);
+    padding: 12px;
+    margin: 9px 0;
+    border-radius: 10px;
+}
+summary {
+    cursor: pointer;
+    font-weight: bold;
+    color: var(--blue);
+}
+.answer { color: var(--green); margin-top: 10px; }
+ul { padding-left: 22px; }
+footer {
+    text-align: center;
+    color: var(--muted);
+    padding: 30px 15px;
+}
+.big {
+    font-size: 25px;
+    font-weight: bold;
+    color: var(--green);
+}
+</style>
+</head>
+
+<body>
+
+<header>
+    <h1>📁 DATOVÉ SOUBORY</h1>
+    <p>C# • Windows Forms • Tahák před písemkou</p>
+    <p>Vysvětlení podle tvých školních úloh 1–6</p>
+</header>
+
+<nav>
+    <a href="#zaklad">Základy</a>
+    <a href="#text">Textové</a>
+    <a href="#binary">Binární</a>
+    <a href="#priklady">Příklady</a>
+    <a href="#chyby">Chyby</a>
+    <a href="#test">Mini test</a>
+</nav>
+
+<main>
+
+<section id="zaklad">
+<h2>1. Základní principy</h2>
+
+<div class="card">
+    <h3>Co je datový soubor?</h3>
+    <p>Soubor slouží k ukládání údajů, aby nám zůstaly i po vypnutí programu.</p>
+    <p>V C# nejčastěji pracujeme se dvěma typy:</p>
+    <span class="tag">Textový soubor .txt</span>
+    <span class="tag">Binární soubor .dat</span>
+</div>
+
+<div class="card">
+    <h3>Textový vs. binární soubor</h3>
+    <table>
+        <tr><th>Textový</th><th>Binární</th></tr>
+        <tr><td>Čitelný člověkem</td><td>Není běžně čitelný</td></tr>
+        <tr><td>StreamReader</td><td>BinaryReader</td></tr>
+        <tr><td>StreamWriter</td><td>BinaryWriter</td></tr>
+        <tr><td>ReadLine()</td><td>ReadInt32()</td></tr>
+        <tr><td>WriteLine()</td><td>Write()</td></tr>
+    </table>
+</div>
+
+<div class="card tip">
+    <h3>Zapamatuj si!</h3>
+    <p><b>Text = StreamReader / StreamWriter</b></p>
+    <p><b>Binární = BinaryReader / BinaryWriter</b></p>
+    <p>Přípona .dat automaticky neznamená binární soubor. Rozhoduje způsob, jakým jsou data uložena.</p>
+</div>
+
+<div class="card">
+    <h3>using</h3>
+    <pre><code>using (FileStream fs = new FileStream("cisla.dat", FileMode.Open))
+{
+    // Práce se souborem
+}</code></pre>
+    <p><b>using</b> automaticky zavře soubor po dokončení bloku. Nemusíš ručně volat Close().</p>
+</div>
+</section>
+
+<section id="text">
+<h2>2. Textové soubory</h2>
+
+<div class="card">
+    <h3>Čtení textového souboru</h3>
+    <pre><code>using (StreamReader sr = new StreamReader("cisla.txt"))
+{
+    while (!sr.EndOfStream)
+    {
+        string radek = sr.ReadLine();
+        listBox1.Items.Add(radek);
+    }
+}</code></pre>
+    <p><b>StreamReader</b> čte text.</p>
+    <p><b>ReadLine()</b> přečte jeden řádek.</p>
+    <p><b>EndOfStream</b> pozná konec souboru.</p>
+</div>
+
+<div class="card">
+    <h3>Zápis do textového souboru</h3>
+    <pre><code>using (StreamWriter sw = new StreamWriter("vystup.txt"))
+{
+    sw.WriteLine("Ahoj");
+    sw.WriteLine("123");
+}</code></pre>
+    <p><b>WriteLine()</b> zapíše text a přejde na nový řádek.</p>
+</div>
+
+<div class="card">
+    <h3>Přidání na konec souboru</h3>
+    <pre><code>using (StreamWriter sw = new StreamWriter("cisla.txt", true))
+{
+    sw.WriteLine("Novy radek");
+}</code></pre>
+    <p><b>true</b> znamená přidat na konec, ne přepsat celý soubor.</p>
+    <p><b>false</b> znamená přepsat soubor.</p>
+</div>
+
+<div class="card">
+    <h3>Rozdělení řádku pomocí Split</h3>
+    <p>Například máme v souboru:</p>
+    <pre><code>Jan Novak;muz;85</code></pre>
+    <pre><code>string[] udaje = radek.Split(';');
+
+string jmeno = udaje[0];
+string pohlavi = udaje[1];
+int vaha = int.Parse(udaje[2]);</code></pre>
+    <p><b>Split(';')</b> rozdělí řádek podle středníku.</p>
+    <table>
+        <tr><th>Index</th><th>Hodnota</th></tr>
+        <tr><td>udaje[0]</td><td>Jan Novak</td></tr>
+        <tr><td>udaje[1]</td><td>muz</td></tr>
+        <tr><td>udaje[2]</td><td>85</td></tr>
+    </table>
+</div>
+
+<div class="card warning">
+    <h3>Převod textu na číslo</h3>
+    <pre><code>int cislo = int.Parse(radek);</code></pre>
+    <p><b>Parse</b> převede text na číslo, ale při neplatném textu může vyhodit chybu.</p>
+    <pre><code>if (int.TryParse(radek, out int cislo))
+{
+    // Tady je cislo platne
+}</code></pre>
+    <p><b>TryParse</b> bezpečně zkusí převod. Pokud se převod nepovede, vrátí false.</p>
+</div>
+</section>
+
+<section id="binary">
+<h2>3. Binární soubory</h2>
+
+<div class="card">
+    <h3>BinaryWriter – zápis</h3>
+    <pre><code>using (FileStream fs = new FileStream("cisla.dat", FileMode.Create))
+{
+    using (BinaryWriter bw = new BinaryWriter(fs))
+    {
+        bw.Write(10);
+        bw.Write(20);
+        bw.Write(30);
+    }
+}</code></pre>
+    <p><b>BinaryWriter</b> zapisuje hodnoty binárně.</p>
+</div>
+
+<div class="card">
+    <h3>BinaryReader – čtení</h3>
+    <pre><code>using (FileStream fs = new FileStream("cisla.dat", FileMode.Open))
+{
+    using (BinaryReader br = new BinaryReader(fs))
+    {
+        while (br.BaseStream.Position < br.BaseStream.Length)
+        {
+            int cislo = br.ReadInt32();
+            listBox1.Items.Add(cislo);
+        }
+    }
+}</code></pre>
+    <p><b>Position</b> = aktuální pozice v souboru.</p>
+    <p><b>Length</b> = celková délka souboru.</p>
+    <p>Cyklus běží, dokud jsme nedošli na konec.</p>
+</div>
+
+<div class="card warning">
+    <h3>POZOR – typy musí souhlasit!</h3>
+    <table>
+        <tr><th>Zápis</th><th>Čtení</th></tr>
+        <tr><td>bw.Write(int)</td><td>br.ReadInt32()</td></tr>
+        <tr><td>bw.Write(double)</td><td>br.ReadDouble()</td></tr>
+        <tr><td>bw.Write(float)</td><td>br.ReadSingle()</td></tr>
+        <tr><td>bw.Write(bool)</td><td>br.ReadBoolean()</td></tr>
+        <tr><td>bw.Write(char)</td><td>br.ReadChar()</td></tr>
+    </table>
+    <p class="big">Co zapíšu, to stejně přečtu!</p>
+</div>
+
+<div class="card">
+    <h3>FileMode – režimy souboru</h3>
+    <table>
+        <tr><th>Režim</th><th>Význam</th></tr>
+        <tr><td>Create</td><td>Vytvoří nebo přepíše soubor.</td></tr>
+        <tr><td>Open</td><td>Otevře existující soubor.</td></tr>
+        <tr><td>Append</td><td>Otevře nebo vytvoří soubor a zapisuje na konec.</td></tr>
+        <tr><td>CreateNew</td><td>Vytvoří nový soubor, pokud ještě neexistuje.</td></tr>
+        <tr><td>OpenOrCreate</td><td>Otevře nebo vytvoří soubor.</td></tr>
+    </table>
+</div>
+
+<div class="card">
+    <h3>File.Exists – kontrola existence</h3>
+    <pre><code>if (File.Exists("cisla.dat"))
+{
+    // Soubor existuje
+}
+else
+{
+    MessageBox.Show("Soubor neexistuje");
+}</code></pre>
+</div>
+
+<div class="card">
+    <h3>FileStream – důležité vlastnosti</h3>
+    <ul>
+        <li><b>fs.Position</b> – aktuální pozice.</li>
+        <li><b>fs.Length</b> – velikost souboru.</li>
+        <li><b>fs.Position = 0</b> – návrat na začátek.</li>
+        <li><b>fs.Position = fs.Length</b> – přesun na konec.</li>
+    </ul>
+</div>
+</section>
+
+<section id="priklady">
+<h2>4. Typické úlohy z tvých kódů</h2>
+
+<div class="card">
+    <h3>A) Převod textového souboru na binární</h3>
+    <p>Načteme čísla z TXT a uložíme je do DAT.</p>
+    <pre><code>using (StreamReader sr = new StreamReader("cisla.txt"))
+{
+    using (FileStream fs = new FileStream("cisla.dat", FileMode.Create))
+    {
+        using (BinaryWriter bw = new BinaryWriter(fs))
+        {
+            while (!sr.EndOfStream)
+            {
+                string radek = sr.ReadLine();
+
+                if (int.TryParse(radek, out int cislo))
+                {
+                    bw.Write(cislo);
+                }
+            }
+        }
+    }
+}</code></pre>
+    <p>Postup: přečtu řádek → převedu na číslo → zapíšu binárně.</p>
+</div>
+
+<div class="card">
+    <h3>B) Výpočet průměru</h3>
+    <pre><code>double n = double.Parse(textBox1.Text);
+double soucet = 0;
+
+for (int i = 0; i < n; i++)
+{
+    double cislo = br.ReadDouble();
+    soucet += cislo;
+}
+
+double prumer = soucet / n;</code></pre>
+    <p>Průměr = součet všech čísel / počet čísel.</p>
+    <p class="answer">Pozor: soubor musí obsahovat double hodnoty a počet n nesmí být nula.</p>
+</div>
+
+<div class="card">
+    <h3>C) Výpis každého druhého čísla</h3>
+    <pre><code>int poradi = 1;
+
+while (br.BaseStream.Position < br.BaseStream.Length)
+{
+    int cislo = br.ReadInt32();
+
+    if (poradi % 2 == 0)
+    {
+        listBox1.Items.Add(cislo);
+    }
+
+    poradi++;
+}</code></pre>
+    <p><b>%</b> znamená zbytek po dělení.</p>
+    <p><b>poradi % 2 == 0</b> znamená sudé pořadí.</p>
+    <p><b>poradi++</b> zvýší pořadí o jedna.</p>
+    <div class="card tip">
+        Čísla: 10, 20, 30, 40, 50<br>
+        Výpis: <b>20, 40</b>
+    </div>
+</div>
+
+<div class="card">
+    <h3>D) Hledání největšího čísla</h3>
+    <pre><code>int max = int.MinValue;
+
+while (br.BaseStream.Position < br.BaseStream.Length)
+{
+    int cislo = br.ReadInt32();
+
+    if (cislo > max)
+    {
+        max = cislo;
+    }
+}</code></pre>
+    <p><b>int.MinValue</b> je nejmenší hodnota typu int.</p>
+    <p>Pokud najdeme větší číslo, uložíme ho do max.</p>
+</div>
+
+<div class="card">
+    <h3>E) Prohození maxima s posledním číslem</h3>
+    <p>Nejdříve si při čtení uložíme pozici největšího čísla a jeho hodnotu.</p>
+    <pre><code>long max_pozice = 0;
+int max = int.MinValue;
+int posledni = 0;
+
+while (br.BaseStream.Position < br.BaseStream.Length)
+{
+    long aktualni_pozice = fs.Position;
+    int cislo = br.ReadInt32();
+
+    if (cislo > max)
+    {
+        max = cislo;
+        max_pozice = aktualni_pozice;
+    }
+
+    posledni = cislo;
+}</code></pre>
+    <p>Potom zapíšeme poslední číslo na místo maxima a maximum na konec:</p>
+    <pre><code>fs.Position = max_pozice;
+bw.Write(posledni);
+
+fs.Position = fs.Length - 4;
+bw.Write(max);</code></pre>
+    <div class="card warning">
+        <b>Proč -4?</b>
+        <p>Protože jedno číslo typu int zabírá 4 bajty. Tohle platí pro soubor složený z hodnot int32.</p>
+    </div>
+</div>
+
+<div class="card">
+    <h3>F) Prvočísla</h3>
+    <p>Prvočíslo je číslo větší než 1, které je dělitelné pouze 1 a samo sebou.</p>
+    <pre><code>public bool JePrvocislo(int c)
+{
+    if (c < 2)
+    {
+        return false;
+    }
+    else
+    {
+        for (int d = 2; d < c; d++)
+        {
+            if (c % d == 0)
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+}</code></pre>
+    <p>Pokud zbytek po dělení vyjde 0, číslo není prvočíslo.</p>
+    <p><b>c % d == 0</b> = číslo je dělitelné beze zbytku.</p>
+</div>
+
+<div class="card">
+    <h3>G) Rozdělení sportovců na muže a ženy</h3>
+    <pre><code>if (udaje[1] == "muz")
+{
+    muzi.WriteLine(radek);
+}
+else
+{
+    zeny.WriteLine(radek);
+}</code></pre>
+    <p>Podle druhého údaje poznáme pohlaví a řádek zapíšeme do příslušného souboru.</p>
+</div>
+
+<div class="card">
+    <h3>H) Vyhledání jména Svoboda</h3>
+    <pre><code>if (udaje[0].Contains("Svoboda"))
+{
+    listBox2.Items.Add(radek);
+}</code></pre>
+    <p><b>Contains</b> kontroluje, jestli text obsahuje zadaný řetězec.</p>
+    <p>Například najde „Tomas Svoboda“ i „Anna Svobodova“.</p>
+</div>
+
+<div class="card">
+    <h3>I) Otevření a uložení souboru přes dialog</h3>
+    <pre><code>if (openFileDialog1.ShowDialog() == DialogResult.OK)
+{
+    string cesta = openFileDialog1.FileName;
+}</code></pre>
+    <p><b>OpenFileDialog</b> umožní vybrat soubor.</p>
+    <p><b>SaveFileDialog</b> umožní vybrat, kam uložit nový soubor.</p>
+    <p><b>FileName</b> obsahuje cestu k vybranému souboru.</p>
+</div>
+</section>
+
+<section id="chyby">
+<h2>5. Nejčastější chyby u písemky</h2>
+
+<div class="card danger">
+    <h3>❌ Špatný typ při čtení</h3>
+    <pre><code>bw.Write(10.5);
+int cislo = br.ReadInt32();</code></pre>
+    <p>Špatně! Zapsal jsi double, ale čteš int.</p>
+    <p class="answer">✓ Správně: br.ReadDouble()</p>
+</div>
+
+<div class="card danger">
+    <h3>❌ Zapomenuté Position = 0</h3>
+    <p>Pokud jsi do souboru zapisoval a chceš ho následně číst, musíš se vrátit na začátek.</p>
+    <pre><code>fs.Position = 0;</code></pre>
+</div>
+
+<div class="card danger">
+    <h3>❌ Špatné umístění poradi++</h3>
+    <pre><code>if (poradi % 2 == 0)
+{
+    poradi++;
+}</code></pre>
+    <p>Špatně – pořadí se zvýší pouze při splnění podmínky.</p>
+    <p class="answer">✓ poradi++ patří mimo if, ale dovnitř cyklu.</p>
+</div>
+
+<div class="card danger">
+    <h3>❌ Soubor už neexistuje</h3>
+    <p>Před otevřením souboru pro čtení můžeš ověřit:</p>
+    <pre><code>if (File.Exists("cisla.dat"))
+{
+    // cteni souboru
+}</code></pre>
+</div>
+
+<div class="card danger">
+    <h3>❌ Soubor je stále otevřený</h3>
+    <p>Nemůžeš bez rozmyslu současně číst a zapisovat do stejného souboru přes různé streamy.</p>
+    <p>Nejdřív dokonči čtení a zavři stream pomocí <b>using</b>, potom soubor znovu otevři pro zápis.</p>
+</div>
+
+<div class="card warning">
+    <h3>Další věci, na které nezapomenout</h3>
+    <ul>
+        <li>Vymazat ListBox před novým načtením: <code>listBox1.Items.Clear();</code></li>
+        <li>Ověřit existenci souboru.</li>
+        <li>U čísel použít Parse nebo TryParse.</li>
+        <li>Nezapomenout na <code>i++</code> nebo <code>poradi++</code>.</li>
+        <li>Správně nastavit FileMode.</li>
+        <li>Nezaměnit indexy pole – první je vždy 0.</li>
+    </ul>
+</div>
+</section>
+
+<section id="test">
+<h2>6. Mini test před písemkou</h2>
+<p>Zkus si odpovědět bez koukání. Kliknutím zobrazíš odpověď.</p>
+
+<details>
+    <summary>1. Jaký příkaz čte textový soubor?</summary>
+    <p class="answer">StreamReader</p>
+</details>
+
+<details>
+    <summary>2. Jaký příkaz zapisuje binární data?</summary>
+    <p class="answer">BinaryWriter</p>
+</details>
+
+<details>
+    <summary>3. Jak přečtu celé číslo int ze souboru?</summary>
+    <p class="answer">br.ReadInt32()</p>
+</details>
+
+<details>
+    <summary>4. Jak zapíšu desetinné číslo typu double?</summary>
+    <p class="answer">bw.Write(cislo);</p>
+</details>
+
+<details>
+    <summary>5. Co znamená FileMode.Create?</summary>
+    <p class="answer">Vytvoří soubor, případně přepíše existující.</p>
+</details>
+
+<details>
+    <summary>6. Co znamená FileMode.Open?</summary>
+    <p class="answer">Otevře již existující soubor.</p>
+</details>
+
+<details>
+    <summary>7. Jak zjistím, jestli soubor existuje?</summary>
+    <p class="answer">File.Exists("cisla.dat")</p>
+</details>
+
+<details>
+    <summary>8. Co dělá ReadLine()?</summary>
+    <p class="answer">Přečte jeden řádek textového souboru.</p>
+</details>
+
+<details>
+    <summary>9. Co dělá Split(';')?</summary>
+    <p class="answer">Rozdělí text podle středníku na jednotlivé části pole.</p>
+</details>
+
+<details>
+    <summary>10. Co znamená Position?</summary>
+    <p class="answer">Aktuální pozice v souboru.</p>
+</details>
+
+<details>
+    <summary>11. Co znamená Length?</summary>
+    <p class="answer">Celková délka souboru v bajtech.</p>
+</details>
+
+<details>
+    <summary>12. Jak se vrátím na začátek souboru?</summary>
+    <p class="answer">fs.Position = 0;</p>
+</details>
+
+<details>
+    <summary>13. Co dělá TryParse?</summary>
+    <p class="answer">Bezpečně zkouší převést text na číslo a vrací true nebo false.</p>
+</details>
+
+<details>
+    <summary>14. Jak zjistím každé druhé pořadí?</summary>
+    <p class="answer">poradi % 2 == 0</p>
+</details>
+
+<details>
+    <summary>15. Co znamená int.MinValue?</summary>
+    <p class="answer">Nejmenší možná hodnota typu int. Hodí se jako počáteční hodnota při hledání maxima.</p>
+</details>
+
+<details>
+    <summary>16. Jak přidám text na konec souboru?</summary>
+    <p class="answer">new StreamWriter("soubor.txt", true)</p>
+</details>
+
+<details>
+    <summary>17. Co dělá using?</summary>
+    <p class="answer">Po dokončení bloku automaticky zavře používaný soubor nebo stream.</p>
+</details>
+
+<details>
+    <summary>18. Co znamená % v C#?</summary>
+    <p class="answer">Zbytek po dělení.</p>
+</details>
+
+<div class="card tip">
+    <h3>Rychlé opakování – zapamatuj si těchto 8 věcí</h3>
+    <ol>
+        <li>Text = StreamReader / StreamWriter.</li>
+        <li>Binární = BinaryReader / BinaryWriter.</li>
+        <li>int = ReadInt32().</li>
+        <li>double = ReadDouble().</li>
+        <li>Create = vytvořit nebo přepsat.</li>
+        <li>Open = otevřít existující.</li>
+        <li>Position = aktuální pozice.</li>
+        <li>Length = délka souboru.</li>
+    </ol>
+</div>
+</section>
+
+<footer>
+    <p>📚 Datové soubory – C# Windows Forms</p>
+    <p>Uč se po částech a zkoušej si kód napsat bez nápovědy.</p>
+</footer>
+
+</main>
+</body>
+</html>
